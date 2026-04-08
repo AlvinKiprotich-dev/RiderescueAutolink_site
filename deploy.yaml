@@ -1,0 +1,42 @@
+name: Deploy Frontend
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 1. Install Node and Build the Project
+      - name: Install & Build
+        run: |
+          npm install
+          npm run build
+
+      # 2. Copy ONLY the 'dist' folder to the server
+      - name: Copy build artifacts via SCP
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          # IMPORTANT: We only send the build folder (dist)
+          source: "./dist/*"
+          target: "/root/riderescue/frontend"
+          strip_components: 1 # Removes the top-level folder so files land inside 'frontend' correctly
+
+      # 3. Refresh Nginx (Frontend)
+      - name: Restart Frontend
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /root/riderescue
+            # Restart frontend container to pick up new files (if caching is aggressive)
+            docker compose restart frontend

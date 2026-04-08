@@ -1,0 +1,16 @@
+export const ApiEndpoints = {
+  auth: "/auth",
+  bookings: "/bookings",
+  brands: "/brands",
+  expertise: "/expertise",
+  notifications: "/notifications",
+  services: "/services",
+  uploads: "/uploads",
+  users: "/users",
+  vehicles: "/vehicles",
+  servicesDocuments: "/services/documents",
+  servicesHours: "/services/hours",
+  servicesRepresentatives: "/services/representatives",
+  servicesReviews: "/services/reviews",
+  servicesDocumentsRequired: "/services/documents/required",
+};
